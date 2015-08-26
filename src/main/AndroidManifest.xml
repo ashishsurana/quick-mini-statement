@@ -16,6 +16,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Message"
+            android:screenOrientation="portrait"
+            />
     </application>
     <uses-permission android:name="android.permission.READ_SMS"></uses-permission>
 </manifest>

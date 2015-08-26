@@ -1,38 +1,40 @@
 package com.example.ashish.mini;
 
-import android.app.Activity;
+import android.app.ListActivity;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
-
-import java.net.URI;
 import java.util.ArrayList;
 
-public class MainActivity extends Activity {
+
+public class MainActivity extends ListActivity {
     Uri uri = Uri.parse("content://sms/inbox");
     String[] fetched = new String[] {"_id",  "address", "body" };
     String num,content;
-    ArrayList<String> smsInbox = new ArrayList<String>();
-
+    final ArrayList<String> numArray = new ArrayList<String>();
+    final ArrayList<String> contentArray = new ArrayList<>();
+    String s = new String();
     ListView listView;
     SimpleCursorAdapter adapter;
-    TextView lblmsg,lblno;
-    ArrayList arrayList;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        listView = (ListView) findViewById(R.id.listView1);
+        listView = (ListView) findViewById(android.R.id.list);
 
+
+        
+        
         //fetching
         ContentResolver cr = getContentResolver();
         Cursor c = cr.query(uri, fetched, null, null, null);
@@ -40,35 +42,54 @@ public class MainActivity extends Activity {
             c.moveToLast();
         if (c.getCount()>0){
             do {
-                num=c.getString(c.getColumnIndex("body"));
-                smsInbox.add(num);
+                num=c.getString(c.getColumnIndex("address"));
+                content=c.getString(c.getColumnIndex("body"));
+                numArray.add(num);
+                contentArray.add(content);
+
             }while (c.moveToPrevious());
+
         }
         //feching done and added in smsInbox
+
+
+
         adapter = new SimpleCursorAdapter(this,R.layout.row,c,new String[] {"body" , "address"},new int[] {R.id.lblmsg,R.id.lblno});
         listView.setAdapter(adapter);
-    }
-    
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Toast.makeText(getBaseContext(), position, Toast.LENGTH_LONG).show();
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+                position += 1;
+                int a = numArray.size();
+                String selected = numArray.get(a - position);
+                Intent intent = new Intent(MainActivity.this, Message.class);
+                ArrayList<String> searchedcontent = createList(selected,a);
+                intent.putExtra("pos", selected);
+                startActivity(intent);
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+                Log.d("MainActivity", String.valueOf(position));
+                Log.d("MainActivity", String.valueOf(a - position));
+                Log.d("MainActivity", String.valueOf(numArray.get(a - position)));
+
+            }
+        });
+        }//end of onCreate Method
+
+        public ArrayList<String> createList(String a,int size){
+            ArrayList<String> result = new ArrayList<String>();
+            for (int i=0; i<size; i++){
+                if(numArray.get(i).equalsIgnoreCase(a))
+                {
+                    result.add(String.valueOf(contentArray.get(i)));
+                }
+            }
+
+
+
+            return result;
         }
 
-        return super.onOptionsItemSelected(item);
-    }
-}
+}//end of main class

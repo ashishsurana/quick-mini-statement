@@ -66,13 +66,16 @@ public class MainActivity extends ListActivity {
                 String selected = numArray.get(a - position);
                 Intent intent = new Intent(MainActivity.this, Message.class);
                 ArrayList<String> searchedcontent = createList(selected,a);
-                intent.putExtra("pos", selected);
+//                intent.putExtra("pos", selected);
+                intent.putStringArrayListExtra("pos",searchedcontent);
                 startActivity(intent);
 
 
                 Log.d("MainActivity", String.valueOf(position));
-                Log.d("MainActivity", String.valueOf(a - position));
-                Log.d("MainActivity", String.valueOf(numArray.get(a - position)));
+//                Log.d("MainActivity", String.valueOf(a - position));
+                Log.d("MainActivity", String.valueOf(selected));
+                Log.d("MainActivity",String.valueOf(contentArray.get(a-position)));
+                Log.d("MainActivity",String.valueOf(searchedcontent.get(3)));
 
             }
         });

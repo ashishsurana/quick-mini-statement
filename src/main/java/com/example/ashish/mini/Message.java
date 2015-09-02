@@ -3,6 +3,7 @@ package com.example.ashish.mini;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.provider.SyncStateContract;
 import android.util.Log;
@@ -41,7 +42,6 @@ public class Message extends ListActivity {
     }
     //function to insert the data in database
     public void databaseoperation(ArrayList<String> arrayList){
-        String dbname = 
         
 
     }

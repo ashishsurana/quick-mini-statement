@@ -2,6 +2,7 @@ package com.example.ashish.mini;
 
 import android.app.ListActivity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+
 import java.util.ArrayList;
 
 
@@ -23,6 +25,7 @@ public class MainActivity extends ListActivity {
     String s = new String();
     ListView listView;
     SimpleCursorAdapter adapter;
+    final ArrayList<String> result = new ArrayList<String>();
 
 
 
@@ -64,30 +67,39 @@ public class MainActivity extends ListActivity {
                 position += 1;
                 int a = numArray.size();
                 String selected = numArray.get(a - position);
+                String subs = selected.substring(3,selected.length());
+
+                ArrayList<String> searchedcontent = createList(selected, a);//recieves whole list of selected messagess
+//                searchedcontent = createList(subs,a);
+
+
+                //Starting New Activity
                 Intent intent = new Intent(MainActivity.this, Message.class);
-                ArrayList<String> searchedcontent = createList(selected,a);
-//                intent.putExtra("pos", selected);
-                intent.putStringArrayListExtra("pos",searchedcontent);
+                intent.putStringArrayListExtra("pos", searchedcontent);
                 startActivity(intent);
 
 
-                Log.d("MainActivity", String.valueOf(position));
+                Log.d("MainActivity", subs);
+                Log.d("LastIndex",String.valueOf(selected.length()));
+                /*
+
 //                Log.d("MainActivity", String.valueOf(a - position));
                 Log.d("MainActivity", String.valueOf(selected));
                 Log.d("MainActivity",String.valueOf(contentArray.get(a-position)));
-                Log.d("MainActivity",String.valueOf(searchedcontent.get(3)));
+                Log.d("MainActivity",String.valueOf(searchedcontent.get(3)));*/
 
             }
         });
         }//end of onCreate Method
 
         public ArrayList<String> createList(String a,int size){
-            ArrayList<String> result = new ArrayList<String>();
+
             for (int i=0; i<size; i++){
-                if(numArray.get(i).equalsIgnoreCase(a))
+                if(numArray.get(i).substring(3,numArray.get(i).length()).equalsIgnoreCase(a.substring(3,a.length())))
                 {
                     result.add(String.valueOf(contentArray.get(i)));
                 }
+
             }
 
 

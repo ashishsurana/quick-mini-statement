@@ -32,11 +32,17 @@ public class Message extends ListActivity {
          s = bundle.getStringArrayList("pos");
 //        Log.d("Message",String.valueOf(s.get(2)));
 //        textView.setText(String.valueOf(s.get(3)) );
-        Log.d("Testing", "onCreated called" + String.valueOf(s.get(3)));
+//        Log.d("Testing", "onCreated called" + String.valueOf(s.get(3)));
         adapter = new ArrayAdapter<String>(this, R.layout.row2,android.R.id.text1,s);
         listView.setAdapter(adapter);
+        databaseoperation(s);
 
 
+    }
+    //function to insert the data in database
+    public void databaseoperation(ArrayList<String> arrayList){
+        String dbname = 
+        
 
     }
 

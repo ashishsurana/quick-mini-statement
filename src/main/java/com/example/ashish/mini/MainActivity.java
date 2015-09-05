@@ -79,8 +79,8 @@ public class MainActivity extends ListActivity {
                 startActivity(intent);
 
 
-                Log.d("MainActivity", subs);
-                Log.d("LastIndex",String.valueOf(selected.length()));
+//                Log.d("MainActivity", subs);
+//                Log.d("LastIndex",String.valueOf(selected.length()));
                 /*
 
 //                Log.d("MainActivity", String.valueOf(a - position));
@@ -97,13 +97,14 @@ public class MainActivity extends ListActivity {
             for (int i=0; i<size; i++){
                 if(numArray.get(i).substring(3,numArray.get(i).length()).equalsIgnoreCase(a.substring(3,a.length())))
                 {
+
                     result.add(String.valueOf(contentArray.get(i)));
                 }
 
             }
 
 
-
+            //Size here is 81
             return result;
         }
 

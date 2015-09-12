@@ -26,7 +26,7 @@ public class MainActivity extends ListActivity {
     ListView listView;
     SimpleCursorAdapter adapter;
     final ArrayList<String> result = new ArrayList<String>();
-
+//    String tablename = new String();
 
 
     @Override
@@ -53,6 +53,8 @@ public class MainActivity extends ListActivity {
             }while (c.moveToPrevious());
 
         }
+//        tablename = c.getString(c.getColumnIndex("address"));
+//        Log.d("tbNME",tablename);
         //feching done and added in smsInbox
 
 
@@ -68,7 +70,7 @@ public class MainActivity extends ListActivity {
                 int a = numArray.size();
                 String selected = numArray.get(a - position);
                 String subs = selected.substring(3,selected.length());
-
+//                Log.d("tbNME",subs);
                 ArrayList<String> searchedcontent = createList(selected, a);//recieves whole list of selected messagess
 //                searchedcontent = createList(subs,a);
 
@@ -76,6 +78,7 @@ public class MainActivity extends ListActivity {
                 //Starting New Activity
                 Intent intent = new Intent(MainActivity.this, Message.class);
                 intent.putStringArrayListExtra("pos", searchedcontent);
+//                intent.putExtra("tbNME",subs);
                 startActivity(intent);
 
 
@@ -104,7 +107,7 @@ public class MainActivity extends ListActivity {
             }
 
 
-            //Size here is 81
+
             return result;
         }
 

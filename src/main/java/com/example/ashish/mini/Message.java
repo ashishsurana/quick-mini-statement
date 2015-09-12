@@ -14,7 +14,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.security.BasicPermission;
+import java.sql.SQLDataException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by ashish on 25/8/15.
@@ -25,6 +29,7 @@ public class Message extends ListActivity {
     ArrayAdapter<String> adapter ;
     TextView textView;
     ArrayList<String> s;
+    String tbname=new String();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -34,8 +39,9 @@ public class Message extends ListActivity {
         listView = (ListView) findViewById(android.R.id.list);
         Bundle bundle = getIntent().getExtras();
          s =  bundle.getStringArrayList("pos");
+//        tbname=bundle.getString("")
         adapter = new ArrayAdapter<String>(this, R.layout.row2,android.R.id.text1,s);
-        listView.setAdapter(adapter);//Display size here is 81 as in previousclass
+//        listView.setAdapter(adapter);//Display size here is 81 as in previousclass
 
 //        s.clear();
         Log.d("AryLt Size befo fetch",String.valueOf(s.size()));
@@ -53,20 +59,15 @@ public class Message extends ListActivity {
         catch (SQLException e){
 
         }
-//        try {
-//            db.execSQL(dbHelper.SQL_DELETE_ENTRIES);
-//        }                                                       //Deleting the database
-//        catch (SQLException e){
-//            e.printStackTrace();
-//        }
 
         ContentValues values = new ContentValues();
 
-
-        for (int i=0; i<arrayList.size(); i++)
+        Boolean valid;
+        /*for (int i=0; i<arrayList.size(); i++)
         {
 //            values.put(dbHelper.FeedEntry._ID,i);
-            if(arrayList.get(i).contains("Credited") || arrayList.get(i).contains("Debited")) {
+            valid=checkvalidity(arrayList.get(i));//if debit/credit present in message
+            if(valid==true) {
 
 
                 values.put(dbHelper.FeedEntry.COLUMN_NAME_RAW_MESSAGE, arrayList.get(i));
@@ -74,24 +75,29 @@ public class Message extends ListActivity {
 
                 try{
                     db.insert(dbHelper.FeedEntry.TABLE_NAME, null, values);
+//                    db.execSQL(dbHelper.SQL_DELETE_ENTRIES);
+
                 }
-                catch (SQLException e)
-                {
-                    e.printStackTrace();
+                catch (SQLException e){
+
                 }
+
+
+
             }
             else{
 
-                Log.d("Trash ", arrayList.get(i));
+//                Log.d("Trash ", arrayList.get(i));
             }
-//            values.put(dbHelper.FeedEntry.COLUMN_NAME_CREDDEB,credordeb(arrayList.get(i)));
-        }
+
+        }*/
 
 
 
         //Fetching the values
         SQLiteDatabase db2 = helper.getReadableDatabase();
-        Cursor cursor = db2.rawQuery("SELECT * FROM MESSAGE",null);
+        Log.d("Working?","yes");
+        Cursor cursor = db2.rawQuery("SELECT * FROM MESSAGE", null);
         String temp = new String();
         if(cursor != null)
             cursor.moveToLast();
@@ -106,7 +112,13 @@ public class Message extends ListActivity {
         }while (cursor.moveToPrevious());
 
         adapter = new ArrayAdapter<String>(this, R.layout.row2,android.R.id.text1,arrayList);
-        listView.setAdapter(adapter);
+        listView.setAdapter(adapter);//Display of fetched stuff
+//        credordeb(arrayList.get(5));
+//        getacno(arrayList.get(5));
+        Log.d("C/D" ,credordeb(arrayList.get(5)));
+        Log.d("A/C",getacno(arrayList.get(5)));
+        Log.d("Bal",getbal(arrayList.get(5)));
+
 
     }//DatabaseOperation Ending
 
@@ -114,14 +126,46 @@ public class Message extends ListActivity {
 
     public String credordeb(String temp){
      String result = new String();
-        if(temp.contains("Debited"))
-            result = "D";
-        else if(temp.contains("Credited"))
-            result = "C";
-        else
-        result = null;
+        String c_d =  ".*([Dd]ebited|[Cc]redited).*";
+        Pattern pattern = Pattern.compile(c_d);
+        Matcher matcher = pattern.matcher(temp);
+        if(matcher.matches()==true){
+            result=matcher.group(1).substring(0,1).toUpperCase();
+            Log.d("C/D" ,result);
+        }
         return result;
     }
+    public String getacno(String temp){
+        String result = new String();
+        String acno = ".*([Aa][/]?[cC].*([\\.X0\\s]{3,8}([\\d]{4}))).*";//1 for a/c 3 for ac no//// .
+        Pattern pattern = Pattern.compile(acno);
+        Matcher matcher = pattern.matcher(temp);
+        if(matcher.find()){
+            result=matcher.group(3);
+        }
+        return result;
+
+    }
+    public static String getbal(String temp){
+        String result=new String();
+        String bal = ".*[bB]al.*([Rr][s][,\\s+\\.^0-9][.\\D]?[\\D]?(.*[.][\\d][\\d])).*";//group 1 for ballance
+        Pattern pattern = Pattern.compile(bal);
+        Matcher matcher = pattern.matcher(temp);
+        if(matcher.find()){
+            result=matcher.group(2);
+        }
+        return result;
+    }
+
+    public Boolean checkvalidity(String s){
+        Boolean result = new Boolean(null);
+        String c_d =  ".*([Dd]ebited|[Cc]redited).*";
+        Pattern pattern = Pattern.compile(c_d);
+        Matcher matcher = pattern.matcher(s);
+        return  matcher.matches();
+
+    }
+
 
 
 

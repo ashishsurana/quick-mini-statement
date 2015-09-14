@@ -63,7 +63,7 @@ public class Message extends ListActivity {
         ContentValues values = new ContentValues();
 
         Boolean valid;
-        /*for (int i=0; i<arrayList.size(); i++)
+        for (int i=0; i<arrayList.size(); i++)
         {
 //            values.put(dbHelper.FeedEntry._ID,i);
             valid=checkvalidity(arrayList.get(i));//if debit/credit present in message
@@ -71,6 +71,12 @@ public class Message extends ListActivity {
 
 
                 values.put(dbHelper.FeedEntry.COLUMN_NAME_RAW_MESSAGE, arrayList.get(i));
+                values.put(dbHelper.FeedEntry.COLUMN_NAME_CREDDEB,credordeb(arrayList.get(i)));
+                values.put(dbHelper.FeedEntry.COLUMN_NAME_BALLANCE,getbal(arrayList.get(i)));
+                values.put(dbHelper.FeedEntry.COLUMN_NAME_AMOUNT,getamt(arrayList.get(i)));
+                values.put(dbHelper.FeedEntry.COLUMN_NAME_DATE,getdate(arrayList.get(i)));
+                values.put(dbHelper.FeedEntry.COLUMN_NAME_ACNO,getacno(arrayList.get(i)));
+
 //                Log.d("No Trash ", arrayList.get(i));
 
                 try{
@@ -90,13 +96,12 @@ public class Message extends ListActivity {
 //                Log.d("Trash ", arrayList.get(i));
             }
 
-        }*/
-
+        }
 
 
         //Fetching the values
         SQLiteDatabase db2 = helper.getReadableDatabase();
-        Log.d("Working?","yes");
+
         Cursor cursor = db2.rawQuery("SELECT * FROM MESSAGE", null);
         String temp = new String();
         if(cursor != null)
@@ -115,9 +120,18 @@ public class Message extends ListActivity {
         listView.setAdapter(adapter);//Display of fetched stuff
 //        credordeb(arrayList.get(5));
 //        getacno(arrayList.get(5));
-        Log.d("C/D" ,credordeb(arrayList.get(5)));
-        Log.d("A/C",getacno(arrayList.get(5)));
-        Log.d("Bal",getbal(arrayList.get(5)));
+//        getbal(arrayList.get(5));
+//        getdate(arrayList.get(5));
+//        gettime(arrayList.get(5));
+//        getamt(arrayList.get(5));
+
+//        Log.d("C/D" ,credordeb(arrayList.get(5)));
+//        Log.d("A/C",getacno(arrayList.get(5)));
+//        Log.d("Bal",getbal(arrayList.get(5)));
+//        Log.d("Date",getdate(arrayList.get(5)));
+        Log.d("SampleIP",arrayList.get(5));
+        Log.d("Time",gettime(arrayList.get(5)));
+        Log.d("Amt",getamt(arrayList.get(5)));
 
 
     }//DatabaseOperation Ending
@@ -131,7 +145,7 @@ public class Message extends ListActivity {
         Matcher matcher = pattern.matcher(temp);
         if(matcher.matches()==true){
             result=matcher.group(1).substring(0,1).toUpperCase();
-            Log.d("C/D" ,result);
+            Log.d("Sample" ,temp);
         }
         return result;
     }
@@ -153,6 +167,48 @@ public class Message extends ListActivity {
         Matcher matcher = pattern.matcher(temp);
         if(matcher.find()){
             result=matcher.group(2);
+        }
+        return result;
+    }
+    public static String getdate(String temp){
+        String result = new String();
+//        Log.d("first","Running");
+        String date = ".*([0-3][0-9][-/][0-1][0-9][-/](([0-1][0-9])|([0-9]{4}))).*";
+//        Log.d("second","Running");
+        Pattern pattern = Pattern.compile(date);
+        Matcher matcher = pattern.matcher(temp);
+        if(matcher.find()){
+            result = matcher.group(1);
+        }
+        return result;
+    }
+    public static String gettime(String temp){
+        String result       = new String();
+        Log.d("Step1","working");
+        String time=new String();
+        time = ".*([0-1][0-9][:][0-5][0-9][:][0-5][0-9]).*";
+        Log.d("Step2","working");
+        Pattern pattern = Pattern.compile(time);
+        Log.d("Step3","working");
+        Matcher matcher = pattern.matcher(temp);
+        if(matcher.matches()){
+            result = matcher.group(1);
+        }
+        return result;
+    }
+    public static String getamt(String temp){
+        String result=new String();
+        String amtpre = ".*([Rr][s][,\\s+\\.^0-9][.\\D]?[\\D]?(\\d+[,]?\\d+[.][\\d][\\d]?)).*([Dd]ebited|[Cc]redited).*";
+        String amtpost = ".*([Dd]ebited|[Cc]redited).*(with|by).([Rr][s][,\\s+\\.^0-9][.\\D]?[\\D]?(\\d+[,]?\\d+([.][\\d][\\d])?)).*";
+        Pattern pattern1 = Pattern.compile(amtpre);
+        Pattern pattern2 = Pattern.compile(amtpost);
+        Matcher matcher1 = pattern1.matcher(temp);
+        Matcher matcher2 = pattern2.matcher(temp);
+        if(matcher2.find()){
+            result=matcher2.group(4);
+        }
+        else if (matcher1.find()){
+            result=matcher1.group(2);
         }
         return result;
     }

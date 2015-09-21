@@ -18,17 +18,16 @@ public class dbHelper extends SQLiteOpenHelper {
     private static final String COMMA_SEP = ",";
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + FeedEntry.TABLE_NAME + " (" +
-
                     FeedEntry._ID + " INTEGER ," +
-                    FeedEntry.COLUMN_NAME_RAW_MESSAGE + TEXT_TYPE + " PRIMARY KEY" + " )";
-//                    FeedEntry.COLUMN_NAME_CREDDEB + TEXT_TYPE  +
-//                    FeedEntry.COLUMN_NAME_BALLANCE + TEXT_TYPE +
+                    FeedEntry.COLUMN_NAME_RAW_MESSAGE + TEXT_TYPE + " PRIMARY KEY" +COMMA_SEP +
+                    FeedEntry.COLUMN_NAME_CORD + TEXT_TYPE  + COMMA_SEP +
+                    FeedEntry.COLUMN_NAME_BALLANCE + TEXT_TYPE + COMMA_SEP +
+                    FeedEntry.COLUMN_NAME_AMOUNT + TEXT_TYPE + COMMA_SEP +
+                    FeedEntry.COLUMN_NAME_DATE + TEXT_TYPE + COMMA_SEP +
+                    FeedEntry.COLUMN_NAME_TIME + TEXT_TYPE + COMMA_SEP +
+                    FeedEntry.COLUMN_NAME_ACNO + TEXT_TYPE +
+                    " )";
 //                    FeedEntry.COLUMN_NAME_ADDRESS + TEXT_TYPE +
-//                    FeedEntry.COLUMN_NAME_AMOUNT + TEXT_TYPE +
-//                    FeedEntry.COLUMN_NAME_DATE + TEXT_TYPE +
-//                    FeedEntry.COLUMN_NAME_TIME + TEXT_TYPE +
-//                    FeedEntry.COLUMN_NAME_ACNO + TEXT_TYPE +
-
 
     public static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + FeedEntry.TABLE_NAME ;
@@ -65,13 +64,13 @@ public class dbHelper extends SQLiteOpenHelper {
         public static final String TABLE_NAME = "message";
         public static final String COLUMN_NAME_ID="_id";
         public static final String COLUMN_NAME_RAW_MESSAGE = "rawmessage";
-        public static final String COLUMN_NAME_CREDDEB = "c_d";
+        public static final String COLUMN_NAME_CORD = "c_d";
         public static final String COLUMN_NAME_BALLANCE = "bal";
         public static final String COLUMN_NAME_AMOUNT = "amt";
         public static final String COLUMN_NAME_DATE = "date";
         public static final String COLUMN_NAME_ACNO  = "acno";
-//        public static final String COLUMN_NAME_TIME = "time";
-        public static final String COLUMN_NAME_ADDRESS = "address";
+        public static final String COLUMN_NAME_TIME = "time";
+//        public static final String COLUMN_NAME_ADDRESS = "address";
 
 //        public static final String COLUMN_NAME_SUBTITLE = "subtitle";
 //        public static void setTableName(String tableName){

@@ -78,7 +78,7 @@ public class MainActivity extends ListActivity {
                 //Starting New Activity
                 Intent intent = new Intent(MainActivity.this, Message.class);
                 intent.putStringArrayListExtra("pos", searchedcontent);
-//                intent.putExtra("tbNME",subs);
+                intent.putExtra("tbNME",subs);
                 startActivity(intent);
 
 

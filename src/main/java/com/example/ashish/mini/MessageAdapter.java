@@ -8,83 +8,91 @@ import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by ashish on 16/9/15.
  */
-public class MessageAdapter extends ArrayAdapter<MainContent> {
-    private Context ctx;
-    public ArrayList<MainContent> contentArrayList;
-    LayoutInflater inflater;
-    MainContent tempdata;
 
-    //Constructor
-    public MessageAdapter(Context context ,int textviewid,ArrayList<MainContent> messages){
-        super(context,textviewid);
-        this.ctx=context;
-        this.contentArrayList=messages;
-
+public class MessageAdapter extends ArrayAdapter<MainContent>{
+    List<MainContent> mainContentList ;
+    public MessageAdapter(Context context,int arg0){
+        super(context,arg0);
+    }
+    public MessageAdapter(Context context,int rid,List<MainContent> content){
+        super(context,rid,content);
+        mainContentList=content;
     }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-
-
-
-        View vi = convertView;
-        ViewHolder holder;
-        if(convertView==null){
-            inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            vi=inflater.inflate(R.layout.row2,null);
-            holder=new ViewHolder();
-            holder.tvc_d = (TextView) vi.findViewById(R.id.tvcord);
-            holder.tvbal = (TextView) vi.findViewById(R.id.tvbal);
-            holder.tvamt = (TextView) vi.findViewById(R.id.tvamt);
-            holder.tvdate = (TextView) vi.findViewById(R.id.tvdate);
-            holder.tvtime = (TextView) vi.findViewById(R.id.tvtime);
-            vi.setTag(holder);
-
-
-        }
-        else {
-            holder=(ViewHolder)vi.getTag();
-        }
-
-        MainContent message= getItem(position);
-        Log.d("Position in GetItem",String.valueOf(position));
-        holder.tvamt.setText(message.getAmt());
-        holder.tvbal.setText(message.getBal());
-        holder.tvc_d.setText(message.getC_d());
-        holder.tvdate.setText(message.getDate());
-        holder.tvtime.setText(message.getTime());
-
-
-//        Log.d("Data",)
-        return vi;
-
-    }
 
     @Override
     public int getCount() {
-
-        return contentArrayList.size();
+        return mainContentList.size();
     }
 
     @Override
     public MainContent getItem(int position) {
-        return contentArrayList.get(position);
+
+        return mainContentList.get(position);
     }
 
-    public static class ViewHolder{
+//    @Override
+//    public long getItemId(int position) {
+//        return 0;
+//    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View v=convertView;
+        if (v == null) {
+            LayoutInflater vi;
+            vi = LayoutInflater.from(getContext());
+            v = vi.inflate(R.layout.row2, null);
+        }
+
+        MainContent p = getItem(position);
+
+        if (p != null) {
+            Holder holder = new Holder();
+            holder.tvc_d = (TextView) v.findViewById(R.id.tvcord);
+            holder.tvbal = (TextView) v.findViewById(R.id.tvbal);
+            holder.tvamt = (TextView) v.findViewById(R.id.tvamt);
+            holder.tvdate = (TextView) v.findViewById(R.id.tvdate);
+            holder.tvtime = (TextView) v.findViewById(R.id.tvtime);
+
+
+            if (holder.tvamt != null) {
+                holder.tvamt.setText(p.getAmt()+ " ");
+            }
+
+            if (holder.tvbal != null) {
+                holder.tvbal.setText(p.getBal()+ " ");
+            }
+
+            if (holder.tvdate != null) {
+                holder.tvdate.setText(p.getDate()+ " ");
+            }
+            if (holder.tvtime != null) {
+                holder.tvtime.setText(p.getTime() + " ");
+            }
+            if (holder.tvc_d != null) {
+                holder.tvc_d.setText(p.getC_d()+ " ");
+            }
+        }
+
+        return v;
+    }
+
+    public static class Holder{
         public TextView tvc_d ;
         public TextView tvbal ;
         public TextView tvamt ;
         public TextView tvdate ;
         public TextView tvtime ;
     }
-
-
 }

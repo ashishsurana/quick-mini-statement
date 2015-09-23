@@ -32,6 +32,7 @@ public class Message extends ListActivity {
     TextView textView;
     ArrayList<String> s;
     String tbname=new String();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -89,7 +90,7 @@ public class Message extends ListActivity {
 
                 }
                 catch (SQLException e){
-
+                    e.fillInStackTrace();
                 }
 
 
@@ -105,7 +106,7 @@ public class Message extends ListActivity {
 
         //Fetching the values
         SQLiteDatabase db2 = helper.getReadableDatabase();
-        MainContent message=new MainContent();
+
         Cursor cursor = db2.rawQuery("SELECT * FROM MESSAGE", null);
         String fetched_rawmsg = new String();
         ArrayList<MainContent> mainContentArrayList=new ArrayList<MainContent>();
@@ -116,23 +117,25 @@ public class Message extends ListActivity {
         if(cursor.getCount()>0)
             arrayList.clear();
         do{
+            MainContent message=new MainContent();
 //            fetched_rawmsg=getbal(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_RAW_MESSAGE )));
-//            fetched_rawmsg=cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_AMOUNT));
+            fetched_rawmsg=cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_AMOUNT));
             message.setDate(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_DATE)));
             message.setTime(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_TIME)));
             message.setC_d(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_CORD)));
             message.setAmt(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_AMOUNT)));
             message.setBal(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_BALLANCE)));
 
-
             mainContentArrayList.add(message);
             arrayList.add(fetched_rawmsg);
+
         }while (cursor.moveToPrevious());
+
+        MainContent temp=mainContentArrayList.get(6);
 
         ListView messageListView = (ListView) findViewById(android.R.id.list);
         MessageAdapter adapter1=new MessageAdapter(this,R.layout.row2,mainContentArrayList);
         messageListView.setAdapter(adapter1);
-
 //        adapter = new ArrayAdapter<String>(this, R.layout.row2,android.R.id.text1,arrayList);
 //        listView.setAdapter(adapter);//Display of fetched stuff
 

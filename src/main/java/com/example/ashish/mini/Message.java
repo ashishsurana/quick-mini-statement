@@ -2,6 +2,7 @@ package com.example.ashish.mini;
 
 import android.app.Activity;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,17 +11,21 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.provider.SyncStateContract;
 import android.util.Log;
+import android.view.View;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import java.security.BasicPermission;
 import java.sql.SQLDataException;
 import java.util.ArrayList;
+import java.util.logging.LogRecord;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import android.os.Handler;
+import android.widget.Toast;
 
 /**
  * Created by ashish on 25/8/15.
@@ -31,28 +36,37 @@ public class Message extends ListActivity {
     ArrayAdapter<String> adapter ;
     TextView textView;
     ArrayList<String> s;
-    String tbname=new String();
+    public static String tbname=new String();
+    Handler handler = new Handler();
+    public Boolean valid_selection=false;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sheet);
+
         textView = (TextView) findViewById(R.id.textView2);
         listView = (ListView) findViewById(android.R.id.list);
         Bundle bundle = getIntent().getExtras();
          s =  bundle.getStringArrayList("pos");
         tbname=bundle.getString("tbNME");
+        
         adapter = new ArrayAdapter<String>(this, R.layout.row2,android.R.id.text1,s);
         listView.setAdapter(adapter);//Display size here is 81 as in previousclass
-
-
-        databaseoperation(s);
-
+        insertiondata(s);
+        if(valid_selection==true)
+        fetching_data(s);
+        else{
+            Toast toast=Toast.makeText(getApplicationContext(),"You may have selected wrong message",Toast.LENGTH_LONG);
+            toast.show();
+        }
 
     }
-    //function to perform operations on database
-    public void databaseoperation(ArrayList<String> arrayList){
+
+    public void insertiondata(ArrayList<String> arrayList){
+        Boolean valid;//for validating a message
         dbHelper helper = new dbHelper(getBaseContext());
         SQLiteDatabase db = helper.getWritableDatabase();
         try {
@@ -62,14 +76,13 @@ public class Message extends ListActivity {
 
         }
 
-
-
         //Inserting block
-        Boolean valid;
+
         for (int i=0; i<arrayList.size(); i++)
-//        for (int i=25; i<35; i++)
+
         {
             ContentValues values = new ContentValues();
+
             valid=checkvalidity(arrayList.get(i));//if debited/credited present in message
             if(valid==true) {
 
@@ -81,35 +94,27 @@ public class Message extends ListActivity {
                 values.put(dbHelper.FeedEntry.COLUMN_NAME_DATE,getdate(arrayList.get(i)));
                 values.put(dbHelper.FeedEntry.COLUMN_NAME_ACNO, getacno(arrayList.get(i)));
                 values.put(dbHelper.FeedEntry.COLUMN_NAME_TIME, gettime(arrayList.get(i)));
-
-
-
                 try{
                     db.insert(dbHelper.FeedEntry.TABLE_NAME, null, values);
 //                    db.execSQL(dbHelper.SQL_DELETE_ENTRIES);
-
                 }
                 catch (SQLException e){
                     e.fillInStackTrace();
                 }
-
-
-
-            }
-            else{
-
-//                Log.d("Trash ", arrayList.get(i));
             }
 
-        }//Ending of Inserting block
 
+        }//Ending of Inserting loop
+    }
 
-        //Fetching the values
+    public void fetching_data(ArrayList<String> arrayList){
+        dbHelper helper = new dbHelper(getBaseContext());
         SQLiteDatabase db2 = helper.getReadableDatabase();
+        ArrayList<MainContent> mainContentArrayList=new ArrayList<MainContent>();
 
         Cursor cursor = db2.rawQuery("SELECT * FROM MESSAGE", null);
         String fetched_rawmsg = new String();
-        ArrayList<MainContent> mainContentArrayList=new ArrayList<MainContent>();
+
 
         if(cursor != null)
             cursor.moveToLast();
@@ -118,32 +123,21 @@ public class Message extends ListActivity {
             arrayList.clear();
         do{
             MainContent message=new MainContent();
-//            fetched_rawmsg=getbal(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_RAW_MESSAGE )));
-            fetched_rawmsg=cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_AMOUNT));
             message.setDate(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_DATE)));
             message.setTime(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_TIME)));
             message.setC_d(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_CORD)));
             message.setAmt(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_AMOUNT)));
             message.setBal(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_BALLANCE)));
-
             mainContentArrayList.add(message);
-            arrayList.add(fetched_rawmsg);
-
         }while (cursor.moveToPrevious());
 
-        MainContent temp=mainContentArrayList.get(6);
 
         ListView messageListView = (ListView) findViewById(android.R.id.list);
         MessageAdapter adapter1=new MessageAdapter(this,R.layout.row2,mainContentArrayList);
         messageListView.setAdapter(adapter1);
 //        adapter = new ArrayAdapter<String>(this, R.layout.row2,android.R.id.text1,arrayList);
 //        listView.setAdapter(adapter);//Display of fetched stuff
-
-
-
-
-    }//DatabaseOperation Ending
-
+    }//end of fetching data
 
 
     public static String credordeb(String temp){
@@ -203,7 +197,7 @@ public class Message extends ListActivity {
     }
     public static String getamt(String temp){
         String result=new String();
-        String amtpre = ".*([Rr][s][,\\s+\\.^0-9][.\\D]?[\\D]?(\\d+[,]?\\d+([.][\\d][\\d])?)).*([Dd]ebited|[Cc]redited).*";
+        String amtpre = ".*([Rr][s][,\\s+\\.^0-9][.\\D]?[\\D]?(\\d+[,]?([\\d]{1,3}[.][\\d][\\d])?)).*([Dd]ebited|[Cc]redited).*";
         String amtpost = ".*([Dd]ebited|[Cc]redited).*(with|by).([Rr][s][,\\s+\\.^0-9][.\\D]?[\\D]?(\\d+[,]?\\d+([.][\\d][\\d])?)).*";
         Pattern pattern1 = Pattern.compile(amtpre);
         Pattern pattern2 = Pattern.compile(amtpost);
@@ -219,12 +213,13 @@ public class Message extends ListActivity {
 
         return result;
     }
-
     public Boolean checkvalidity(String s){
         Boolean result = new Boolean(null);
         String c_d =  ".*([Dd]ebited|[Cc]redited).*";
         Pattern pattern = Pattern.compile(c_d);
         Matcher matcher = pattern.matcher(s);
+        if(matcher.matches()==true)
+            valid_selection=true;
         return  matcher.matches();
 
     }

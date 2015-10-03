@@ -81,16 +81,6 @@ public class MainActivity extends ListActivity {
                 intent.putExtra("tbNME",subs);
                 startActivity(intent);
 
-
-//                Log.d("MainActivity", subs);
-//                Log.d("LastIndex",String.valueOf(selected.length()));
-                /*
-
-//                Log.d("MainActivity", String.valueOf(a - position));
-                Log.d("MainActivity", String.valueOf(selected));
-                Log.d("MainActivity",String.valueOf(contentArray.get(a-position)));
-                Log.d("MainActivity",String.valueOf(searchedcontent.get(3)));*/
-
             }
         });
         }//end of onCreate Method

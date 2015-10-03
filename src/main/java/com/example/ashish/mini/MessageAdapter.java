@@ -57,9 +57,11 @@ public class MessageAdapter extends ArrayAdapter<MainContent>{
 
         MainContent p = getItem(position);
 
+
         if (p != null) {
             Holder holder = new Holder();
-            holder.tvc_d = (TextView) v.findViewById(R.id.tvcord);
+            holder.tvcred = (TextView) v.findViewById(R.id.tvcred);
+            holder.tvdeb = (TextView) v.findViewById(R.id.tvdeb);
             holder.tvbal = (TextView) v.findViewById(R.id.tvbal);
             holder.tvamt = (TextView) v.findViewById(R.id.tvamt);
             holder.tvdate = (TextView) v.findViewById(R.id.tvdate);
@@ -67,21 +69,30 @@ public class MessageAdapter extends ArrayAdapter<MainContent>{
 
 
             if (holder.tvamt != null) {
-                holder.tvamt.setText(p.getAmt()+ " ");
+                holder.tvamt.setText(p.getAmt());
             }
 
             if (holder.tvbal != null) {
-                holder.tvbal.setText(p.getBal()+ " ");
+                holder.tvbal.setText(p.getBal());
             }
 
             if (holder.tvdate != null) {
-                holder.tvdate.setText(p.getDate()+ " ");
+                holder.tvdate.setText(p.getDate());
             }
             if (holder.tvtime != null) {
-                holder.tvtime.setText(p.getTime() + " ");
+                holder.tvtime.setText(p.getTime());
             }
-            if (holder.tvc_d != null) {
-                holder.tvc_d.setText(p.getC_d()+ " ");
+            if (holder.tvcred != null || holder.tvdeb != null) {
+                if(p.getC_d().equalsIgnoreCase("C")) {
+
+                    holder.tvcred.setText(p.getC_d());
+                    holder.tvdeb.setText(null);
+                }
+                else {
+
+                    holder.tvdeb.setText(p.getC_d());
+                    holder.tvcred.setText(null);
+                }
             }
         }
 
@@ -89,7 +100,8 @@ public class MessageAdapter extends ArrayAdapter<MainContent>{
     }
 
     public static class Holder{
-        public TextView tvc_d ;
+        public TextView tvcred ;
+        public TextView tvdeb;
         public TextView tvbal ;
         public TextView tvamt ;
         public TextView tvdate ;

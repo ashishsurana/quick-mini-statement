@@ -1,6 +1,7 @@
 package com.example.ashish.mini;
 
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,9 +12,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class MainActivity extends ListActivity {
@@ -26,7 +31,7 @@ public class MainActivity extends ListActivity {
     ListView listView;
     SimpleCursorAdapter adapter;
     final ArrayList<String> result = new ArrayList<String>();
-//    String tablename = new String();
+    public Integer temp=new Integer(0);
 
 
     @Override
@@ -35,9 +40,6 @@ public class MainActivity extends ListActivity {
         setContentView(R.layout.activity_main);
         listView = (ListView) findViewById(android.R.id.list);
 
-
-        
-        
         //fetching
         ContentResolver cr = getContentResolver();
         Cursor c = cr.query(uri, fetched, null, null, null);
@@ -53,8 +55,6 @@ public class MainActivity extends ListActivity {
             }while (c.moveToPrevious());
 
         }
-//        tablename = c.getString(c.getColumnIndex("address"));
-//        Log.d("tbNME",tablename);
         //feching done and added in smsInbox
 
 
@@ -64,23 +64,26 @@ public class MainActivity extends ListActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Toast.makeText(getBaseContext(), position, Toast.LENGTH_LONG).show();
 
                 position += 1;
                 int a = numArray.size();
                 String selected = numArray.get(a - position);
-                String subs = selected.substring(3,selected.length());
-//                Log.d("tbNME",subs);
-                ArrayList<String> searchedcontent = createList(selected, a);//recieves whole list of selected messagess
-//                searchedcontent = createList(subs,a);
+                String subs = selected.substring(3, selected.length());
+                ArrayList<String> searchedcontent = createList(selected, a);//recieves whole list of selected messages
 
+                if (temp==0){
+                    Toast toast=Toast.makeText(getApplicationContext(),"You may have selected wrong message", Toast.LENGTH_LONG);
+                    toast.show();
+                }
 
                 //Starting New Activity
-                Intent intent = new Intent(MainActivity.this, Message.class);
-                intent.putStringArrayListExtra("pos", searchedcontent);
-                intent.putExtra("tbNME",subs);
-                startActivity(intent);
-
+                else {
+                    Intent intent = new Intent(MainActivity.this, Message.class);
+                    intent.putStringArrayListExtra("pos", searchedcontent);
+                    intent.putExtra("tbNME", subs);
+                    startActivity(intent);
+                }
+                
             }
         });
         }//end of onCreate Method
@@ -91,14 +94,22 @@ public class MainActivity extends ListActivity {
                 if(numArray.get(i).substring(3,numArray.get(i).length()).equalsIgnoreCase(a.substring(3,a.length())))
                 {
 
-                    result.add(String.valueOf(contentArray.get(i)));
+                    if(checkvalidity(contentArray.get(i))==true){
+                        result.add(String.valueOf(contentArray.get(i)));
+                    }
                 }
-
             }
-
-
-
             return result;
         }
 
+    public Boolean checkvalidity(String s){
+        Boolean result = new Boolean(null);
+        String c_d =  ".*([Dd]ebited|[Cc]redited).*";
+        Pattern pattern = Pattern.compile(c_d);
+        Matcher matcher = pattern.matcher(s);
+        if(matcher.matches()==true)
+            temp++;
+        return  matcher.matches();
+
+    }
 }//end of main class

@@ -37,7 +37,7 @@ public class Message extends ListActivity {
     TextView textView;
     ArrayList<String> s;
     public static String tbname=new String();
-    Handler handler = new Handler();
+
     public Boolean valid_selection=false;
 
 
@@ -46,7 +46,7 @@ public class Message extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sheet);
-
+        Log.d("Working","Message");
         textView = (TextView) findViewById(R.id.textView2);
         listView = (ListView) findViewById(android.R.id.list);
         Bundle bundle = getIntent().getExtras();
@@ -55,22 +55,21 @@ public class Message extends ListActivity {
         
         adapter = new ArrayAdapter<String>(this, R.layout.row2,android.R.id.text1,s);
         listView.setAdapter(adapter);//Display size here is 81 as in previousclass
-        insertiondata(s);
-        if(valid_selection==true)
+//        insert_data(s);
+
         fetching_data(s);
-        else{
-            Toast toast=Toast.makeText(getApplicationContext(),"You may have selected wrong message",Toast.LENGTH_LONG);
-            toast.show();
-        }
 
     }
 
-    public void insertiondata(ArrayList<String> arrayList){
+    public void insert_data(ArrayList<String> arrayList)    {
         Boolean valid;//for validating a message
         dbHelper helper = new dbHelper(getBaseContext());
         SQLiteDatabase db = helper.getWritableDatabase();
         try {
-            helper.onCreate(db);
+//            helper.setTABLE_NAME(tbname);
+//            helper.onCreate(db);
+            helper.create_table(tbname,db);
+
         }
         catch (SQLException e){
 
@@ -83,11 +82,11 @@ public class Message extends ListActivity {
         {
             ContentValues values = new ContentValues();
 
-            valid=checkvalidity(arrayList.get(i));//if debited/credited present in message
-            if(valid==true) {
+//            valid=checkvalidity(arrayList.get(i));//if debited/credited present in message
+//            if(valid==true) {
 
 
-                values.put(dbHelper.FeedEntry.COLUMN_NAME_RAW_MESSAGE, arrayList.get(i));
+//                values.put(dbHelper.FeedEntry.COLUMN_NAME_RAW_MESSAGE, arrayList.get(i));
                 values.put(dbHelper.FeedEntry.COLUMN_NAME_CORD,credordeb(arrayList.get(i)));
                 values.put(dbHelper.FeedEntry.COLUMN_NAME_BALLANCE,getbal(arrayList.get(i)));
                 values.put(dbHelper.FeedEntry.COLUMN_NAME_AMOUNT,getamt(arrayList.get(i)));
@@ -95,13 +94,14 @@ public class Message extends ListActivity {
                 values.put(dbHelper.FeedEntry.COLUMN_NAME_ACNO, getacno(arrayList.get(i)));
                 values.put(dbHelper.FeedEntry.COLUMN_NAME_TIME, gettime(arrayList.get(i)));
                 try{
-                    db.insert(dbHelper.FeedEntry.TABLE_NAME, null, values);
+//                    db.insert(dbHelper.TABLE_NAME, null, values);
 //                    db.execSQL(dbHelper.SQL_DELETE_ENTRIES);
+                    db.insert(tbname, null, values);
                 }
                 catch (SQLException e){
                     e.fillInStackTrace();
                 }
-            }
+//            }
 
 
         }//Ending of Inserting loop
@@ -111,10 +111,14 @@ public class Message extends ListActivity {
         dbHelper helper = new dbHelper(getBaseContext());
         SQLiteDatabase db2 = helper.getReadableDatabase();
         ArrayList<MainContent> mainContentArrayList=new ArrayList<MainContent>();
-
-        Cursor cursor = db2.rawQuery("SELECT * FROM MESSAGE", null);
-        String fetched_rawmsg = new String();
-
+//        try {
+//               helper.create_table(tbname,db2);
+//
+//        }
+//        catch (SQLException e){
+//
+//        }
+        Cursor cursor = db2.rawQuery("SELECT * FROM " + tbname, null);
 
         if(cursor != null)
             cursor.moveToLast();

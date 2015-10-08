@@ -78,12 +78,16 @@ public class MainActivity extends ListActivity {
 
                 //Starting New Activity
                 else {
+                    Log.d("Working","Working1");
+                    Toast toast=Toast.makeText(getApplicationContext(),"Content is Loading, It may take few seconds or more", Toast.LENGTH_SHORT);
+                    toast.show();
+                    Log.d("Working", "Working2");
                     Intent intent = new Intent(MainActivity.this, Message.class);
                     intent.putStringArrayListExtra("pos", searchedcontent);
                     intent.putExtra("tbNME", subs);
                     startActivity(intent);
+                    toast.cancel();
                 }
-                
             }
         });
         }//end of onCreate Method

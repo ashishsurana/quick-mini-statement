@@ -46,7 +46,7 @@ public class Message extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sheet);
-        Log.d("Working","Message");
+
         textView = (TextView) findViewById(R.id.textView2);
         listView = (ListView) findViewById(android.R.id.list);
         Bundle bundle = getIntent().getExtras();
@@ -55,9 +55,9 @@ public class Message extends ListActivity {
         
         adapter = new ArrayAdapter<String>(this, R.layout.row2,android.R.id.text1,s);
         listView.setAdapter(adapter);//Display size here is 81 as in previousclass
+        fetching_data(s);
 //        insert_data(s);
 
-        fetching_data(s);
 
     }
 
@@ -76,16 +76,11 @@ public class Message extends ListActivity {
         }
 
         //Inserting block
-
         for (int i=0; i<arrayList.size(); i++)
-
         {
             ContentValues values = new ContentValues();
-
 //            valid=checkvalidity(arrayList.get(i));//if debited/credited present in message
 //            if(valid==true) {
-
-
 //                values.put(dbHelper.FeedEntry.COLUMN_NAME_RAW_MESSAGE, arrayList.get(i));
                 values.put(dbHelper.FeedEntry.COLUMN_NAME_CORD,credordeb(arrayList.get(i)));
                 values.put(dbHelper.FeedEntry.COLUMN_NAME_BALLANCE,getbal(arrayList.get(i)));
@@ -111,36 +106,51 @@ public class Message extends ListActivity {
         dbHelper helper = new dbHelper(getBaseContext());
         SQLiteDatabase db2 = helper.getReadableDatabase();
         ArrayList<MainContent> mainContentArrayList=new ArrayList<MainContent>();
-//        try {
-//               helper.create_table(tbname,db2);
-//
-//        }
-//        catch (SQLException e){
-//
-//        }
-        Cursor cursor = db2.rawQuery("SELECT * FROM " + tbname, null);
+        try {
+               db2.rawQuery("DROP TABLE IF EXISTS " + tbname,null);
+                Log.d("Table","Dropped");
+        }
+        catch (SQLException e){
 
-        if(cursor != null)
-            cursor.moveToLast();
+        }
+        try{
+            Cursor cursor = db2.rawQuery("SELECT * FROM " + tbname, null);
+            if(cursor != null)
+                cursor.moveToLast();
 
-        if(cursor.getCount()>0)
-            arrayList.clear();
-        do{
-            MainContent message=new MainContent();
-            message.setDate(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_DATE)));
-            message.setTime(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_TIME)));
-            message.setC_d(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_CORD)));
-            message.setAmt(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_AMOUNT)));
-            message.setBal(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_BALLANCE)));
-            mainContentArrayList.add(message);
-        }while (cursor.moveToPrevious());
+            if(cursor.getCount()>0)
+                arrayList.clear();
+            do{
+                MainContent message=new MainContent();
+                message.setDate(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_DATE)));
+                message.setTime(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_TIME)));
+                message.setC_d(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_CORD)));
+                message.setAmt(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_AMOUNT)));
+                message.setBal(cursor.getString(cursor.getColumnIndex(dbHelper.FeedEntry.COLUMN_NAME_BALLANCE)));
+                mainContentArrayList.add(message);
+            }while (cursor.moveToPrevious());
 
 
-        ListView messageListView = (ListView) findViewById(android.R.id.list);
-        MessageAdapter adapter1=new MessageAdapter(this,R.layout.row2,mainContentArrayList);
-        messageListView.setAdapter(adapter1);
+            ListView messageListView = (ListView) findViewById(android.R.id.list);
+            MessageAdapter adapter1=new MessageAdapter(this,R.layout.row2,mainContentArrayList);
+            messageListView.setAdapter(adapter1);
+
+        }
+        catch (Exception e){
+            if(e!=null){
+
+                insert_data(s);
+                fetching_data(s);
+            }
+
+        }
+
+
+
+
 //        adapter = new ArrayAdapter<String>(this, R.layout.row2,android.R.id.text1,arrayList);
 //        listView.setAdapter(adapter);//Display of fetched stuff
+        insert_data(s);
     }//end of fetching data
 
 
@@ -217,18 +227,16 @@ public class Message extends ListActivity {
 
         return result;
     }
-    public Boolean checkvalidity(String s){
-        Boolean result = new Boolean(null);
-        String c_d =  ".*([Dd]ebited|[Cc]redited).*";
-        Pattern pattern = Pattern.compile(c_d);
-        Matcher matcher = pattern.matcher(s);
-        if(matcher.matches()==true)
-            valid_selection=true;
-        return  matcher.matches();
-
-    }
-
-
+//    public Boolean checkvalidity(String s){
+//        Boolean result = new Boolean(null);
+//        String c_d =  ".*([Dd]ebited|[Cc]redited).*";
+//        Pattern pattern = Pattern.compile(c_d);
+//        Matcher matcher = pattern.matcher(s);
+//        if(matcher.matches()==true)
+//            valid_selection=true;
+//        return  matcher.matches();
+//
+//    }
 
 
     @Override

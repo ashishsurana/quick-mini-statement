@@ -2,6 +2,7 @@ package com.example.ashish.mini;
 
 import android.content.ClipData;
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -60,8 +61,8 @@ public class MessageAdapter extends ArrayAdapter<MainContent>{
 
         if (p != null) {
             Holder holder = new Holder();
-            holder.tvcred = (TextView) v.findViewById(R.id.tvcred);
-            holder.tvdeb = (TextView) v.findViewById(R.id.tvdeb);
+            holder.tvc_d = (TextView) v.findViewById(R.id.tvc_d);
+
             holder.tvbal = (TextView) v.findViewById(R.id.tvbal);
             holder.tvamt = (TextView) v.findViewById(R.id.tvamt);
             holder.tvdate = (TextView) v.findViewById(R.id.tvdate);
@@ -82,16 +83,15 @@ public class MessageAdapter extends ArrayAdapter<MainContent>{
             if (holder.tvtime != null) {
                 holder.tvtime.setText(p.getTime());
             }
-            if (holder.tvcred != null || holder.tvdeb != null) {
-                if(p.getC_d().equalsIgnoreCase("C")) {
+            if (holder.tvc_d != null ) {
+                holder.tvc_d.setText(p.getC_d());
+                if(p.getC_d().equalsIgnoreCase("D")) {
 
-                    holder.tvcred.setText(p.getC_d());
-                    holder.tvdeb.setText(null);
+                    holder.tvc_d.setTextColor(Color.RED);
                 }
                 else {
-
-                    holder.tvdeb.setText(p.getC_d());
-                    holder.tvcred.setText(null);
+                    holder.tvc_d.setTextColor(Color.GREEN);
+                    holder.tvc_d.setBackgroundColor(Color.BLUE);
                 }
             }
         }
@@ -100,8 +100,8 @@ public class MessageAdapter extends ArrayAdapter<MainContent>{
     }
 
     public static class Holder{
-        public TextView tvcred ;
-        public TextView tvdeb;
+        public TextView tvc_d ;
+
         public TextView tvbal ;
         public TextView tvamt ;
         public TextView tvdate ;
